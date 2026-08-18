@@ -1,5 +1,5 @@
-const CACHE="juken-weakness-v4";
-const CORE=["./","index.html","styles.css?v=4","app.js?v=4","manifest.json?v=4"];
+const CACHE="juken-weakness-v5";
+const CORE=["./","index.html","styles.css?v=5","app.js?v=5","manifest.json?v=5"];
 
 self.addEventListener("install",event=>{
   self.skipWaiting();
@@ -19,7 +19,6 @@ self.addEventListener("fetch",event=>{
   if(req.method!=="GET") return;
   const url=new URL(req.url);
   if(url.origin!==location.origin) return;
-
   event.respondWith((async()=>{
     try{
       const fresh=await fetch(req,{cache:"no-store"});
