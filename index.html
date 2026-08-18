@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/><meta name="theme-color" content="#111827"/><title>弱点カルテ</title><link rel="manifest" href="manifest.json"/><link rel="stylesheet" href="styles.css"/></head>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/><meta name="theme-color" content="#111827"/><title>弱点カルテ</title><link rel="manifest" href="manifest.json?v=4"/><link rel="stylesheet" href="styles.css?v=4"/></head>
 <body>
 <header class="app-header"><div><div class="eyebrow">高校受験</div><h1>弱点カルテ</h1></div><div class="header-actions"><button class="help-btn" id="openHelp">？</button><div class="streak"><span id="streakCount">0</span>日 🔥</div></div></header>
 <main>
@@ -15,4 +15,4 @@
 <dialog id="problemDialog"><div class="dialog-card"><div class="section-head"><h2>今日の5問</h2><button class="ghost" id="closeProblemDialog">閉じる</button></div><p class="muted">この文章をコピーしてChatGPTに貼り付けます。</p><textarea id="problemPrompt" rows="18" readonly></textarea><div class="dialog-actions"><button class="primary-btn" id="copyPrompt">コピー</button></div></div></dialog>
 <dialog id="helpDialog"><div class="dialog-card onboarding"><div class="section-head"><div><div class="eyebrow">HOW TO USE</div><h2>弱点カルテの使い方</h2></div><button class="ghost" id="closeHelp">閉じる</button></div><div class="guide-hero">🎯<strong>間違いは「弱点」ではなく<br>次に伸びる場所。</strong></div><div class="guide-item"><b>01</b><div><strong>ミニテスト</strong><p>英進館のミニテストを受けます。点数だけでなく、どこで間違えたかが大切です。</p></div></div><div class="guide-item"><b>02</b><div><strong>間違いノート</strong><p>間違った問題を書き出し、自分で「なぜ間違えた？」を一言考えます。</p></div></div><div class="guide-item guide-chatgpt"><b>03</b><div><strong>ChatGPTで分析</strong><p>①問題 ②採点済み答案 ③間違いノートの3点を共有Projectへアップします。</p><div class="prompt-box"><span>今日のミニテストを分析して</span><button type="button" class="copy-mini copy-analysis">📋 コピー</button></div><p class="copy-hint">↑ 写真3点をアップしたあと、この文を送るだけ。</p></div></div><div class="guide-item"><b>04</b><div><strong>弱点カルテへ登録</strong><p>ChatGPTが最後に出す #RESULT をコピーして「結果を登録」→「クリップボードから読み込む」。内容を確認したら登録します。</p></div></div><div class="guide-item"><b>05</b><div><strong>今日の5問</strong><p>データがたまるほど、自分が間違えやすい単元を優先した5問を作れるようになります。</p></div></div><div class="legend"><span>👑 BOSS＝最優先で攻略</span><span>⚠️ CHALLENGE＝繰り返し注意</span><span>🏆 攻略済み＝直近3回80%以上</span><span>🔥 連続記録＝学習を続けた日数</span></div><button class="primary-btn full" id="startApp">はじめる</button></div></dialog>
 <div id="toast" class="toast" aria-live="polite"></div>
-<script src="app.js"></script></body></html>
+<script src="app.js?v=4"></script></body></html>
