@@ -2,6 +2,7 @@
   const STORAGE_KEY="jukenWeaknessRecordsV1";
   const SUMMARY_KEY="jukenKnowledgeSummaryV1";
   const NOTICE_KEY="jukenImportNotice";
+  const COOKIE_KEY="jukenKb1";
 
   function fromBase64Url(value){
     const base64=value.replace(/-/g,"+").replace(/_/g,"/")+"=".repeat((4-value.length%4)%4);
@@ -31,34 +32,68 @@
     return {summary,records};
   }
 
-  async function importFromHash(){
+  function getCookie(name){
+    const prefix=name+"=";
+    for(const part of document.cookie.split(";")){
+      const value=part.trim();
+      if(value.startsWith(prefix))return value.slice(prefix.length);
+    }
+    return "";
+  }
+
+  function setTransferCookie(value){
+    document.cookie=`${COOKIE_KEY}=${value}; Path=/juken-weakness/; Max-Age=7200; SameSite=Strict; Secure`;
+  }
+
+  function clearTransferCookie(){
+    document.cookie=`${COOKIE_KEY}=; Path=/juken-weakness/; Max-Age=0; SameSite=Strict; Secure`;
+  }
+
+  async function importPayload(encoded,source){
+    const pack=expandPayload(await inflateJson(encoded));
+    let current=[];
+    try{current=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]")}catch{}
+    if(!Array.isArray(current))current=[];
+    const ids=new Set(current.map(r=>r&&r.id).filter(Boolean));
+    let added=0;
+    for(const r of pack.records){
+      if(r.id&&ids.has(r.id))continue;
+      current.push(r);if(r.id)ids.add(r.id);added++;
+    }
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(current));
+    localStorage.setItem(SUMMARY_KEY,JSON.stringify(pack.summary));
+    sessionStorage.setItem(NOTICE_KEY,JSON.stringify({ok:true,added,total:pack.records.length,source}));
+    return {added,total:pack.records.length};
+  }
+
+  async function bootstrapKnowledge(){
     const match=location.hash.match(/^#kb1=([A-Za-z0-9_-]+)$/);
-    if(!match)return;
-    try{
-      const pack=expandPayload(await inflateJson(match[1]));
-      let current=[];
-      try{current=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]")}catch{}
-      if(!Array.isArray(current))current=[];
-      const ids=new Set(current.map(r=>r&&r.id).filter(Boolean));
-      let added=0;
-      for(const r of pack.records){
-        if(r.id&&ids.has(r.id))continue;
-        current.push(r);if(r.id)ids.add(r.id);added++;
+    if(match){
+      try{
+        setTransferCookie(match[1]);
+        await importPayload(match[1],"link");
+      }catch(error){
+        sessionStorage.setItem(NOTICE_KEY,JSON.stringify({ok:false,message:"初期データを取り込めませんでした"}));
       }
-      localStorage.setItem(STORAGE_KEY,JSON.stringify(current));
-      localStorage.setItem(SUMMARY_KEY,JSON.stringify(pack.summary));
-      sessionStorage.setItem(NOTICE_KEY,JSON.stringify({ok:true,added,total:pack.records.length}));
       history.replaceState(null,"",location.pathname+location.search);
-    }catch(error){
-      sessionStorage.setItem(NOTICE_KEY,JSON.stringify({ok:false,message:"初期データを取り込めませんでした"}));
-      history.replaceState(null,"",location.pathname+location.search);
+      return;
+    }
+
+    const carried=getCookie(COOKIE_KEY);
+    if(carried){
+      try{
+        await importPayload(carried,"cookie");
+        clearTransferCookie();
+      }catch(error){
+        sessionStorage.setItem(NOTICE_KEY,JSON.stringify({ok:false,message:"引き継ぎデータを取り込めませんでした"}));
+      }
     }
   }
 
-  await importFromHash();
+  await bootstrapKnowledge();
 
   const script=document.createElement("script");
-  script.src="app.js?v=7";
+  script.src="app.js?v=8";
   script.onload=()=>{
     const raw=sessionStorage.getItem(NOTICE_KEY);
     if(!raw)return;
@@ -67,7 +102,10 @@
       const n=JSON.parse(raw);
       setTimeout(()=>{
         if(typeof window.showToast==="function"){
-          window.showToast(n.ok?(n.added?`📦 過去データ${n.added}件を自動登録しました`:`📦 過去データ${n.total}件は登録済みです`):(n.message||"初期データを取り込めませんでした"));
+          const msg=n.ok
+            ?(n.added?`📦 過去データ${n.added}件を自動登録しました`:`📦 過去データ${n.total}件は登録済みです`)
+            :(n.message||"初期データを取り込めませんでした");
+          window.showToast(msg);
         }
       },500);
     }catch{}
