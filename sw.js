@@ -1,5 +1,5 @@
-const CACHE="juken-weakness-v7";
-const CORE=["./","index.html","styles.css?v=7","boot.js?v=7","app.js?v=7","manifest.json?v=7"];
+const CACHE="juken-weakness-v8";
+const CORE=["./","index.html","styles.css?v=8","boot.js?v=8","app.js?v=8","manifest.json?v=8"];
 
 self.addEventListener("install",event=>{
   self.skipWaiting();
